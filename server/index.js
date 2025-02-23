@@ -22,6 +22,11 @@ app.get("/", (req, res) => {
   res.send("Welcome to the Job Portal API");
 });
 
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/users", require("./routes/userRoutes"));
+app.use("/api/jobs", require("./routes/jobRoutes"));
+app.use("/api/applications", require("./routes/applicationRoutes"));
+app.use("/api/recommendations", require("./routes/recommendationRoutes"));
 
 //PORT
 const PORT = process.env.PORT || 3000;
