@@ -1,0 +1,42 @@
+const Job = require("../models/Job");
+
+// Create a new job
+exports.createJob = async (req, res) => {
+  try {
+    const job = new Job(req.body);
+    await job.save();
+    res.status(201).json(job);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// Get all jobs (with search & filter)
+exports.getJobs = async (req, res) => {
+  try {
+    const { title, location, skills, experience, education } = req.query;
+    let filter = {};
+
+    if (title) filter.title = { $regex: title, $options: "i" };
+    if (location) filter.location = { $regex: location, $options: "i" };
+    if (skills) filter.requirements = { $in: skills.split(",") };
+    if (experience) filter.experienceRequired = { $lte: parseInt(experience) };
+    if (education) filter["educationRequired.degree"] = { $regex: education, $options: "i" };
+
+    const jobs = await Job.find(filter);
+    res.status(200).json(jobs);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// Get a job by ID
+exports.getJobById = async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+    if (!job) return res.status(404).json({ message: "Job not found" });
+    res.status(200).json(job);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
