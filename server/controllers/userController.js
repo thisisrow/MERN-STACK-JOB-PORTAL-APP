@@ -69,12 +69,31 @@ exports.getUserById = async (req, res) => {
   }
 };
 
-// Update user profile
+// Update user profile (Only for allowed fields)
 exports.updateUser = async (req, res) => {
-  try {
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.status(200).json(updatedUser);
-  } catch (error) {
-    res.status(500).json({ error: "Server error" });
-  }
-};
+    try {
+      const userId = req.params.id;
+      const updates = req.body;
+  
+      // Fields that can be updated
+      const allowedFields = ["name", "phone", "location", "skills", "experience", "education", "savedJobs"];
+      
+      // Filter out only allowed fields
+      const filteredUpdates = {};
+      Object.keys(updates).forEach((key) => {
+        if (allowedFields.includes(key)) {
+          filteredUpdates[key] = updates[key];
+        }
+      });
+  
+      const updatedUser = await User.findByIdAndUpdate(userId, filteredUpdates, { new: true });
+  
+      if (!updatedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
+  
+      res.status(200).json(updatedUser);
+    } catch (error) {
+      res.status(500).json({ error: "Server error" });
+    }
+  };
