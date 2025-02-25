@@ -1,0 +1,67 @@
+ 1. Authentication Routes
+   - POST /api/auth/register
+     - Required Inputs: 
+       - name (String)
+       - email (String)
+       - password (String)
+       - role (String)
+   - POST /api/auth/login
+     - Required Inputs:
+       - email (String)
+       - password (String)
+
+2. User Routes
+   - GET /api/users/
+     - Required Inputs: None
+   - GET /api/users/:id
+     - Required Inputs:
+       - id (String)
+   - PUT /api/users/:id
+     - Required Inputs:
+       - id (String)
+       - Optional Fields: 
+         - name (String)
+         - phone (String)
+         - location (String)
+         - skills (Array)
+         - experience (Number)
+         - education (Object)
+
+3. Job Routes
+   - POST /api/jobs/
+     - Required Inputs:
+       - title (String)
+       - company (String)
+       - location (String)
+       - description (String)
+       - requirements (Array)
+       - experienceRequired (Number)
+       - educationRequired (Object)
+       - userId (String) (Recruiter ID)
+   - GET /api/jobs/
+     - Required Inputs: None
+   - GET /api/jobs/:id
+     - Required Inputs:
+       - id (String)
+
+4. Application Routes
+   - POST /api/applications/
+     - Required Inputs:
+       - jobId (String)
+       - userId (String)
+       - coverLetter (String)
+   - GET /api/applications/job/:jobId
+     - Required Inputs:
+       - jobId (String)
+   - GET /api/applications/user/:userId
+     - Required Inputs:
+       - userId (String)
+   - PUT /api/applications/:applicationId/status
+     - Required Inputs:
+       - applicationId (String)
+       - status (String)
+
+5. Recommendation Routes
+   - GET /api/recommendations/:userId
+     - Required Inputs:
+       - userId (String)

@@ -33,6 +33,10 @@ exports.applyForJob = async (req, res) => {
     });
 
     await application.save();
+       // **Update user's appliedJobs array**
+       await User.findByIdAndUpdate(userId, { 
+        $push: { appliedJobs: jobId } // Add jobId to appliedJobs array
+    });
     res.status(201).json(application);
   } catch (error) {
     res.status(500).json({ error: "Server error" });
@@ -77,18 +81,27 @@ exports.getUserApplications = async (req, res) => {
 exports.updateApplicationStatus = async (req, res) => {
   try {
     const { applicationId } = req.params;
-    const { status } = req.body; // New status (e.g., reviewed, interview, rejected, hired)
+    const { status } = req.body;
 
-    const application = await Application.findById(applicationId);
+    console.log(`Updating application ${applicationId} to status: ${status}`);
+
+   
+    // Update application status
+    const application = await Application.findByIdAndUpdate(
+      applicationId,
+      { status },
+      { new: true } // Return the updated document
+    );
+
     if (!application) {
       return res.status(404).json({ error: "Application not found" });
     }
 
-    application.status = status;
-    await application.save();
-
+    console.log("Updated Application:", application);
     res.status(200).json(application);
   } catch (error) {
+    console.error("Error updating application status:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
+

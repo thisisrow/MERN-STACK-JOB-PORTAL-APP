@@ -36,10 +36,11 @@ exports.createJob = async (req, res) => {
 // Get all jobs (with search & filter)
 exports.getJobs = async (req, res) => {
   try {
-    const { title, location, skills, experience, education } = req.query;
+    const { title, company, location, skills, experience, education } = req.query; // Include `company`
     let filter = {};
 
     if (title) filter.title = { $regex: title, $options: "i" };
+    if (company) filter.company = { $regex: company, $options: "i" }; // Now `company` is defined
     if (location) filter.location = { $regex: location, $options: "i" };
     if (skills) filter.requirements = { $in: skills.split(",") };
     if (experience) filter.experienceRequired = { $lte: parseInt(experience) };
@@ -48,9 +49,11 @@ exports.getJobs = async (req, res) => {
     const jobs = await Job.find(filter).populate("postedBy", "name email");
     res.status(200).json(jobs);
   } catch (error) {
+    console.error("Error fetching jobs:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
+
 
 // Get a job by ID
 exports.getJobById = async (req, res) => {
@@ -58,6 +61,44 @@ exports.getJobById = async (req, res) => {
     const job = await Job.findById(req.params.id).populate("postedBy", "name email");
     if (!job) return res.status(404).json({ message: "Job not found" });
     res.status(200).json(job);
+  } catch (error) {
+    res.status(500).json({ error: "Server error" });
+  }
+};
+exports.getJobsByRecruiter = async (req, res) => {
+  try {
+    const recruiterId = req.params.id; // Recruiter ID from URL
+    const jobs = await Job.find({ postedBy: recruiterId });
+
+    if (!jobs.length) {
+      return res.status(404).json({ message: "No jobs found for this recruiter" });
+    }
+
+    res.status(200).json(jobs);
+  } catch (error) {
+    console.error("Error fetching recruiter jobs:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// ❌ Delete a job (Only Recruiters)
+exports.deleteJob = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const recruiterId = req.body.userId; 
+
+    // Validate user role
+    const recruiter = await User.findById(recruiterId);
+    if (!recruiter || recruiter.role !== "recruiter") {
+      return res.status(403).json({ error: "Only recruiters can delete jobs" });
+    }
+
+    // Ensure the recruiter is deleting their own job
+    const job = await Job.findOneAndDelete({ _id: id, postedBy: recruiterId });
+
+    if (!job) return res.status(404).json({ message: "Job not found or unauthorized" });
+
+    res.status(200).json({ message: "Job deleted successfully" });
   } catch (error) {
     res.status(500).json({ error: "Server error" });
   }
