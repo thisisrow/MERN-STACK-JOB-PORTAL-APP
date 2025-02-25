@@ -16,7 +16,8 @@ const UpdateProfile = () => {
       institution: user.education?.institution || "",
       yearOfCompletion: user.education?.yearOfCompletion || "",
     },
-    skills: user.skills || [], // Skills array
+    skills: user.skills || [],
+    experience: user.experience || 0,
   });
 
   const [skillInput, setSkillInput] = useState(""); // New skill input
@@ -101,7 +102,7 @@ const UpdateProfile = () => {
 
         <div className="mb-3">
           <label className="form-label">Phone</label>
-          <input type="text" name="phone" className="form-control" value={formData.phone} onChange={handleChange} />
+          <input type="text" name="phone" className="form-control" value={formData.phone} maxLength={10} onChange={handleChange} />
         </div>
 
         <h4>Education</h4>
@@ -135,6 +136,12 @@ const UpdateProfile = () => {
             </li>
           ))}
         </ul>
+        
+        <div className="mb-3">
+            <label className="form-label">Experience (in years)</label>
+            <input type="number" name="experience" className="form-control" value={formData.experience} onChange={handleChange} />
+        </div>
+
 
         <button type="submit" className="btn btn-success">Save Changes</button>
       </form>

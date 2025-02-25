@@ -23,9 +23,6 @@ const Home = () => {
           <button className="btn btn-primary me-3" onClick={() => navigate("/register")}>
             Get Started
           </button>
-          <button className="btn btn-outline-light" onClick={() => navigate("/login")}>
-            Login
-          </button>
         </div>
       </section>
 
