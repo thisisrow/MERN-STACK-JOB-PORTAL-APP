@@ -47,7 +47,6 @@ const JobDetails = () => {
       setTimeout(() => setSuccess(null), 3000);
     } catch (error) {
       console.error("Error applying for job:", error);
-      console.error("Response Data:", error.response?.data); // Log the actual error message
       setError(error.response?.data?.message || "Failed to apply for the job.");
       setTimeout(() => setError(null), 3000);
     }
