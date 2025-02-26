@@ -5,15 +5,15 @@ const User = require("../models/User");
 exports.createJob = async (req, res) => {
   try {
     const { title, company, location, description, requirements, experienceRequired, educationRequired, salaryRange } = req.body;
-    const recruiterId = req.body.userId; // Assuming userId is sent in request body (Replace with req.user.id after adding auth middleware)
+    const recruiterId = req.body.userId; 
 
-    // Validate user role
+    
     const recruiter = await User.findById(recruiterId);
     if (!recruiter || recruiter.role !== "recruiter") {
       return res.status(403).json({ error: "Only recruiters can post jobs" });
     }
 
-    // Create job
+    
     const job = new Job({
       title,
       company,
@@ -23,7 +23,7 @@ exports.createJob = async (req, res) => {
       experienceRequired,
       educationRequired,
       salaryRange,
-      postedBy: recruiterId, // Assign recruiter
+      postedBy: recruiterId, 
     });
 
     await job.save();
@@ -36,11 +36,11 @@ exports.createJob = async (req, res) => {
 // Get all jobs (with search & filter)
 exports.getJobs = async (req, res) => {
   try {
-    const { title, company, location, skills, experience, education } = req.query; // Include `company`
+    const { title, company, location, skills, experience, education } = req.query; 
     let filter = {};
 
     if (title) filter.title = { $regex: title, $options: "i" };
-    if (company) filter.company = { $regex: company, $options: "i" }; // Now `company` is defined
+    if (company) filter.company = { $regex: company, $options: "i" }; 
     if (location) filter.location = { $regex: location, $options: "i" };
     if (skills) filter.requirements = { $in: skills.split(",") };
     if (experience) filter.experienceRequired = { $lte: parseInt(experience) };
@@ -67,7 +67,7 @@ exports.getJobById = async (req, res) => {
 };
 exports.getJobsByRecruiter = async (req, res) => {
   try {
-    const recruiterId = req.params.id; // Recruiter ID from URL
+    const recruiterId = req.params.id; 
     const jobs = await Job.find({ postedBy: recruiterId });
 
     if (!jobs.length) {
@@ -87,13 +87,13 @@ exports.deleteJob = async (req, res) => {
     const { id } = req.params;
     const recruiterId = req.body.userId; 
 
-    // Validate user role
+    
     const recruiter = await User.findById(recruiterId);
     if (!recruiter || recruiter.role !== "recruiter") {
       return res.status(403).json({ error: "Only recruiters can delete jobs" });
     }
 
-    // Ensure the recruiter is deleting their own job
+    
     const job = await Job.findOneAndDelete({ _id: id, postedBy: recruiterId });
 
     if (!job) return res.status(404).json({ message: "Job not found or unauthorized" });

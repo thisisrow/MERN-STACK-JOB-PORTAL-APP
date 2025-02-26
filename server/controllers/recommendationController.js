@@ -10,16 +10,16 @@ exports.getRecommendations = async (req, res) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Construct query dynamically to match skills, experience, and education
+    
     const query = {
       $or: [
-        { requirements: { $in: user.skills } }, // Matches at least one skill
-        { experienceRequired: { $lte: user.experience } }, // Experience should be less than or equal
-        { "educationRequired.degree": user.education?.degree } // Degree should match
+        { requirements: { $in: user.skills } }, 
+        { experienceRequired: { $lte: user.experience } }, 
+        { "educationRequired.degree": user.education?.degree } 
       ]
     };
 
-    const recommendedJobs = await Job.find(query).limit(10); // Limit results for performance
+    const recommendedJobs = await Job.find(query).limit(10); 
 
     res.status(200).json({ user: userId, recommendedJobs });
 

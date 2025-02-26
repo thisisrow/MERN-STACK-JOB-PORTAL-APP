@@ -7,25 +7,25 @@ exports.applyForJob = async (req, res) => {
   try {
     const { jobId, userId, coverLetter } = req.body;
 
-    // Check if job exists
+    
     const job = await Job.findById(jobId);
     if (!job) {
       return res.status(404).json({ error: "Job not found" });
     }
 
-    // Check if user exists and is a student
+    
     const user = await User.findById(userId);
     if (!user || user.role !== "student") {
       return res.status(403).json({ error: "Only students can apply for jobs" });
     }
 
-    // Check if the user has already applied for the job
+    
     const existingApplication = await Application.findOne({ job: jobId, applicant: userId });
     if (existingApplication) {
       return res.status(400).json({ error: "You have already applied for this job" });
     }
 
-    // Create application
+    
     const application = new Application({
       job: jobId,
       applicant: userId,
@@ -33,9 +33,9 @@ exports.applyForJob = async (req, res) => {
     });
 
     await application.save();
-       // **Update user's appliedJobs array**
+       
        await User.findByIdAndUpdate(userId, { 
-        $push: { appliedJobs: jobId } // Add jobId to appliedJobs array
+        $push: { appliedJobs: jobId } 
     });
     res.status(201).json(application);
   } catch (error) {
@@ -86,11 +86,11 @@ exports.updateApplicationStatus = async (req, res) => {
     console.log(`Updating application ${applicationId} to status: ${status}`);
 
    
-    // Update application status
+    
     const application = await Application.findByIdAndUpdate(
       applicationId,
       { status },
-      { new: true } // Return the updated document
+      { new: true } 
     );
 
     if (!application) {

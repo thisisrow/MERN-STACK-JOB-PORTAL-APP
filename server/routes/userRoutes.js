@@ -3,8 +3,8 @@ const { getAllUsers, getUserById, updateUser } = require("../controllers/userCon
 
 const router = express.Router();
 
-router.get("/", getAllUsers);
-router.get("/:id", getUserById);
-router.put("/:id", updateUser);
+router.get("/", getAllUsers);// get all users
+router.get("/:id", getUserById);// get user by id
+router.put("/:id", updateUser);// update user by id
 
 module.exports = router;
