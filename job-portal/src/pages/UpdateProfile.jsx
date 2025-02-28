@@ -64,7 +64,7 @@ const UpdateProfile = () => {
 
     try {
       await axios.put(
-        `http://localhost:8081/api/users/${user._id}`,
+        `https://mern-stack-job-portal-app.onrender.com/api/users/${user._id}`,
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );

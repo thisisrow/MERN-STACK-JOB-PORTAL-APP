@@ -11,7 +11,7 @@ export const JobProvider = ({ children }) => {
   useEffect(() => {
     const fetchJobs = async () => {
       try {
-        const { data } = await axios.get("http://localhost:8081/api/jobs");
+        const { data } = await axios.get("https://mern-stack-job-portal-app.onrender.com/api/jobs");
         setJobs(data);
       } catch (error) {
         console.error("Error fetching jobs:", error);
@@ -23,7 +23,7 @@ export const JobProvider = ({ children }) => {
   // Fetch recommendations for logged-in user
   const fetchRecommendations = async (userId) => {
     try {
-      const { data } = await axios.get(`http://localhost:8081/api/recommendations/${userId}`);
+      const { data } = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/recommendations/${userId}`);
       setRecommendations(data.recommendedJobs || []);
     } catch (error) {
       console.error("Error fetching recommendations:", error);

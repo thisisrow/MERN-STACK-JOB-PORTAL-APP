@@ -14,7 +14,7 @@ const JobsRecruiter = () => {
 
     const fetchJobs = async () => {
       try {
-        const response = await axios.get(`http://localhost:8081/api/jobs/recruiter/${user._id}`);
+        const response = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/jobs/recruiter/${user._id}`);
         setJobs(response.data);
       } catch (err) {
         setError("Failed to load jobs");
@@ -29,7 +29,7 @@ const JobsRecruiter = () => {
     if (!window.confirm("Are you sure you want to delete this job?")) return;
 
     try {
-      await axios.delete(`http://localhost:8081/api/jobs/recruiter/${jobId}`, {
+      await axios.delete(`https://mern-stack-job-portal-app.onrender.com/api/jobs/recruiter/${jobId}`, {
         data: { userId: user._id },
         headers: { "Content-Type": "application/json" }
       });

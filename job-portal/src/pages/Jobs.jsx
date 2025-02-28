@@ -24,7 +24,7 @@ const Jobs = () => {
     );
 
     axios
-      .get("http://localhost:8081/api/jobs", { params: filteredParams })
+      .get("https://mern-stack-job-portal-app.onrender.com/api/jobs", { params: filteredParams })
       .then((res) => {
         setJobs(res.data);
         setError(null);

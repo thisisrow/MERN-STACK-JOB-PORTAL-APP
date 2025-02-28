@@ -16,7 +16,7 @@ const Recommendation = () => {
     const fetchRecommendations = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:8081/api/recommendations/${user._id}`,
+          `https://mern-stack-job-portal-app.onrender.com/api/recommendations/${user._id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setRecommendedJobs(res.data.recommendedJobs);

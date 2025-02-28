@@ -12,7 +12,7 @@ const JobDetails = () => {
   const [success, setSuccess] = useState(null);
 
   useEffect(() => {
-    axios.get(`http://localhost:8081/api/jobs/${id}`)
+    axios.get(`https://mern-stack-job-portal-app.onrender.com/api/jobs/${id}`)
       .then((res) => {
         setJob(res.data);
       })
@@ -41,7 +41,7 @@ const JobDetails = () => {
     const payload = { jobId: id, userId: user._id, coverLetter };
   
     try {
-      const response = await axios.post("http://localhost:8081/api/applications", payload);  
+      const response = await axios.post("https://mern-stack-job-portal-app.onrender.com/api/applications", payload);  
       await refreshUserData();
       setSuccess("Job application submitted successfully!");
       setTimeout(() => setSuccess(null), 3000);
@@ -62,7 +62,7 @@ const JobDetails = () => {
     }
   
     try {
-        await axios.put(`http://localhost:8081/api/users/${user._id}`, { 
+        await axios.put(`https://mern-stack-job-portal-app.onrender.com/api/users/${user._id}`, { 
           savedJobs: [...user.savedJobs, id] 
         });
   

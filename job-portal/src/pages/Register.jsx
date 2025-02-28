@@ -62,7 +62,7 @@ const Register = () => {
       alert("Please enter a valid Gmail or Outlook email.");
       return;
     }
-    await axios.post("http://localhost:8081/api/auth/register", formData);
+    await axios.post("https://mern-stack-job-portal-app.onrender.com/api/auth/register", formData);
     navigate("/login");
   };
 

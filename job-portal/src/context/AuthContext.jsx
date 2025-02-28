@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
   // Fetch full user details
   const fetchUserData = async (userId, receivedToken) => {
     try {
-      const { data } = await axios.get(`http://localhost:8081/api/users/${userId}`, {
+      const { data } = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/users/${userId}`, {
         headers: { Authorization: `Bearer ${receivedToken}` },
       });
 
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
     if (!user?._id || !token) return;
 
     try {
-      const { data } = await axios.get(`http://localhost:8081/api/users/${user._id}`, {
+      const { data } = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/users/${user._id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -55,7 +55,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setError(null);
-      const { data } = await axios.post("http://localhost:8081/api/auth/login", { email, password });
+      const { data } = await axios.post("https://mern-stack-job-portal-app.onrender.com/api/auth/login", { email, password });
 
       if (data.token && data.userId) {
         setToken(data.token);

@@ -16,7 +16,7 @@ const RecruiterApplications = () => {
 
     const fetchJobs = async () => {
       try {
-        const response = await axios.get(`http://localhost:8081/api/jobs/recruiter/${user._id}`);
+        const response = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/jobs/recruiter/${user._id}`);
         setJobs(response.data);
       } catch (err) {
         setError("Failed to load jobs");
@@ -28,14 +28,14 @@ const RecruiterApplications = () => {
 
   const fetchApplications = async (jobId) => {
     try {
-      const response = await axios.get(`http://localhost:8081/api/applications/job/${jobId}`);
+      const response = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/applications/job/${jobId}`);
       setApplications(response.data);
       setSelectedJob(jobId);
 
       response.data.forEach(async (app) => {
         if (app.applicant?._id && !studentDetails[app.applicant._id]) {
           try {
-            const userResponse = await axios.get(`http://localhost:8081/api/users/${app.applicant._id}`);
+            const userResponse = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/users/${app.applicant._id}`);
             setStudentDetails((prevDetails) => ({
               ...prevDetails,
               [app.applicant._id]: userResponse.data,
@@ -52,7 +52,7 @@ const RecruiterApplications = () => {
 
   const updateStatus = async (applicationId, status) => {
     try {
-      await axios.put(`http://localhost:8081/api/applications/${applicationId}/status`, { status });
+      await axios.put(`https://mern-stack-job-portal-app.onrender.com/api/applications/${applicationId}/status`, { status });
       setApplications((prev) => prev.map((app) => (app._id === applicationId ? { ...app, status } : app)));
     } catch (err) {
       setError("Failed to update status");

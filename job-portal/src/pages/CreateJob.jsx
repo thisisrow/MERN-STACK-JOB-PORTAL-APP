@@ -35,7 +35,7 @@ const CreateJob = () => {
     setLoading(true);
     try {
       await axios.post(
-        "http://localhost:8081/api/jobs",
+        "https://mern-stack-job-portal-app.onrender.com/api/jobs",
         {
           ...jobData,
           requirements: jobData.requirements.split(","),

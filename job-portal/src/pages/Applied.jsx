@@ -13,7 +13,7 @@ const Applied = () => {
 
     const fetchAppliedJobs = async () => {
       try {
-        const response = await axios.get(`http://localhost:8081/api/applications/user/${user._id}`);
+        const response = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/applications/user/${user._id}`);
         setAppliedJobs(response.data);
       } catch (error) {
         console.error("Error fetching applied jobs:", error);
