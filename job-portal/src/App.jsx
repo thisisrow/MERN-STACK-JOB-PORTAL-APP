@@ -5,7 +5,7 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import JobList from "./pages/Jobs";
 import JobDetails from "./pages/JobDetails";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/NavBar";
 import Profile from "./pages/Profile";
 import Applied from "./pages/Applied";
 import Saved from "./pages/Saved";
