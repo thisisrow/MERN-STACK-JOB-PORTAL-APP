@@ -5,6 +5,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: { type: String, enum: ["student", "recruiter"], required: true },
+
   phone: { type: String },
   location: { type: String },
   skills: [{ type: String }], 
@@ -14,6 +15,8 @@ const userSchema = new mongoose.Schema({
     institution: String,
     yearOfCompletion: Number,
   },
+  resume: { type: String, default: null }, // Resume stored in cloudinary
+  description: { type: String, default: null }, // extracted text from resume while uploading
   savedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],
   appliedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Application" }],
 }, { timestamps: true }); 

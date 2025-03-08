@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { FaUpload } from "react-icons/fa";
 
 const UpdateProfile = () => {
   const { user, token, refreshUserData } = useContext(AuthContext);
@@ -23,6 +24,8 @@ const UpdateProfile = () => {
   const [skillInput, setSkillInput] = useState(""); // New skill input
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   // Handle input changes for profile fields
   const handleChange = (e) => {
@@ -58,6 +61,55 @@ const UpdateProfile = () => {
     }));
   };
 
+  // Handle file selection
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type === "application/pdf") {
+      setSelectedFile(file);
+      setError(null);
+    } else {
+      setError("Please select a PDF file");
+      setSelectedFile(null);
+    }
+  };
+
+  // Handle resume upload
+  const handleResumeUpload = async () => {
+    if (!selectedFile) {
+      setError("Please select a file first");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("resume", selectedFile);
+
+    try {
+      const response = await axios.post(
+        `https://mern-stack-job-portal-app.onrender.com/api/users/${user._id}/resume`,
+        formData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+          onUploadProgress: (progressEvent) => {
+            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            setUploadProgress(progress);
+          },
+        }
+      );
+
+      await refreshUserData();
+      setSuccess("Resume uploaded successfully!");
+      setSelectedFile(null);
+      setUploadProgress(0);
+    } catch (err) {
+      console.error("Resume upload failed:", err);
+      setError(err.response?.data?.error || "Failed to upload resume");
+      setUploadProgress(0);
+    }
+  };
+
   // Submit Updated Profile
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -88,6 +140,45 @@ const UpdateProfile = () => {
 
       {error && <div className="alert alert-danger">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}
+
+      {/* Resume Upload Section */}
+      <div className="card mb-4">
+        <div className="card-body">
+          <h4>Resume Upload</h4>
+          <div className="mb-3">
+            <input
+              type="file"
+              accept=".pdf"
+              onChange={handleFileChange}
+              className="form-control"
+            />
+          </div>
+          {selectedFile && (
+            <>
+              <div className="progress mb-3">
+                <div
+                  className="progress-bar"
+                  role="progressbar"
+                  style={{ width: `${uploadProgress}%` }}
+                  aria-valuenow={uploadProgress}
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                >
+                  {uploadProgress}%
+                </div>
+              </div>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleResumeUpload}
+              >
+                <FaUpload className="me-2" />
+                Upload Resume
+              </button>
+            </>
+          )}
+        </div>
+      </div>
 
       <form onSubmit={handleSubmit}>
         <div className="mb-3">

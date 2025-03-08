@@ -1,6 +1,41 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const pdfParse = require("pdf-parse");
+const fs = require("fs");
+const path = require("path");
+
+// Configure Cloudinary
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// Set up multer for temporary storage
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const uploadDir = "./temp";
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+    if (file.mimetype !== "application/pdf") {
+      return cb(new Error("Only PDF files are allowed."));
+    }
+    const fileName = `${req.params.userId}_${Date.now()}${path.extname(file.originalname)}`;
+    cb(null, fileName);
+  },
+});
+
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+}).single("resume");
 
 // Register a new user
 exports.registerUser = async (req, res) => {
@@ -89,3 +124,70 @@ exports.updateUser = async (req, res) => {
       res.status(500).json({ error: "Server error" });
     }
   };
+
+// Upload resume
+exports.uploadResume = (req, res) => {
+  upload(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
+
+    try {
+      const user = await User.findById(req.params.userId);
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      const resumePath = path.join(__dirname, "..", "temp", req.file.filename);
+
+      // Upload to Cloudinary
+      const cloudinaryResponse = await cloudinary.uploader.upload(resumePath, {
+        folder: 'resumes',
+        resource_type: 'auto',
+        public_id: `resume_${req.params.userId}_${Date.now()}`,
+        format: 'pdf'
+      });
+
+      // Extract text from PDF
+      const dataBuffer = fs.readFileSync(resumePath);
+      const pdfData = await pdfParse(dataBuffer);
+
+      // Update user document with new data
+      const updatedUser = await User.findByIdAndUpdate(
+        req.params.userId,
+        {
+          $set: {
+            resume: cloudinaryResponse.secure_url,
+            description: pdfData.text
+          }
+        },
+        { new: true }
+      );
+
+      if (!updatedUser) {
+        throw new Error('Failed to update user document');
+      }
+
+      // Delete temporary file
+      fs.unlinkSync(resumePath);
+
+      res.status(200).json({
+        message: "Resume uploaded successfully",
+        resumeUrl: updatedUser.resume,
+        description: updatedUser.description,
+        cloudinaryDetails: {
+          publicId: cloudinaryResponse.public_id,
+          url: cloudinaryResponse.secure_url,
+          format: cloudinaryResponse.format,
+          size: cloudinaryResponse.bytes
+        }
+      });
+    } catch (error) {
+      console.error('Upload error:', error);
+      res.status(500).json({ 
+        error: "Server error while uploading resume",
+        details: error.message 
+      });
+    }
+  });
+};

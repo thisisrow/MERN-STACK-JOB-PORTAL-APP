@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { FaUser, FaEnvelope, FaMapMarkerAlt, FaPhone, FaGraduationCap, FaBriefcase, FaWrench } from "react-icons/fa";
+import { FaUser, FaEnvelope, FaMapMarkerAlt, FaPhone, FaGraduationCap, FaBriefcase, FaWrench, FaFilePdf } from "react-icons/fa";
 
 const Profile = () => {
   const { user } = useContext(AuthContext);
@@ -37,6 +37,25 @@ const Profile = () => {
             <p><FaGraduationCap className="text-secondary" /> <strong>Degree:</strong> {user.education?.degree || "Not Provided"}</p>
             <p><strong>Institution:</strong> {user.education?.institution || "Not Provided"}</p>
             <p><strong>Year:</strong> {user.education?.yearOfCompletion || "Not Provided"}</p>
+          </div>
+        </div>
+
+        <hr />
+
+        {/* Resume Section */}
+        <div className="row mt-4">
+          <div className="col-12">
+            <h4 className="text-primary">Resume</h4>
+            {user.resume ? (
+              <div className="d-flex align-items-center">
+                <FaFilePdf className="text-danger me-2" size={24} />
+                <a href={user.resume} target="_blank" rel="noopener noreferrer" className="btn btn-outline-primary">
+                  View Resume
+                </a>
+              </div>
+            ) : (
+              <p className="text-muted">No resume uploaded yet</p>
+            )}
           </div>
         </div>
 

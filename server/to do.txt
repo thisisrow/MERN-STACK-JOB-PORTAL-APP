@@ -1,0 +1,7 @@
+step 1:-to update in application controller
+now 
+use chatgpt Ai and OPENAI_API_KEY i have allredy added in env file
+rankApplications so rank student  base on job recurement and show to rectruter
+take all data from post of job and make a comparistion between student data and use student  decription as it contaion all information and rank them according to that job recuriment 
+
+step 2: update fountend for rectrter with button use AI to rank and show with ranking for that perticular job  
