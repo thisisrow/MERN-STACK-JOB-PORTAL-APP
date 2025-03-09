@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-axios.defaults.baseURL = "https://mern-stack-job-portal-app.onrender.com";
+axios.defaults.baseURL = "http://localhost:8081";
 
 // Add a request interceptor for handling tokens
 axios.interceptors.request.use(

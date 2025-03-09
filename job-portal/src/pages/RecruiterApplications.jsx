@@ -3,6 +3,7 @@ import axios from "../config/axios";
 import { AuthContext } from "../context/AuthContext";
 import { FaBriefcase, FaUser, FaEnvelope, FaPhone, FaGraduationCap, FaTools, FaCalendarAlt, FaRobot, FaStar, FaFilePdf, FaEye } from "react-icons/fa";
 import { Modal, Button } from "react-bootstrap";
+import { toast } from "react-toastify";
 
 const RecruiterApplications = () => {
   const { user } = useContext(AuthContext);
@@ -60,11 +61,22 @@ const RecruiterApplications = () => {
     if (!selectedJob) return;
 
     setIsRanking(true);
+    setError(null); // Clear previous errors
+    
     try {
       const response = await axios.get(`/api/applications/job/${selectedJob}/rank`);
-      setRankedApplications(response.data);
+      
+      if (response.data && Array.isArray(response.data) && response.data.length > 0) {
+        setRankedApplications(response.data);
+        toast.success("Applications ranked successfully!");
+      } else {
+        setError("No ranking data received");
+        toast.warning("No ranking data received");
+      }
     } catch (err) {
-      setError("Failed to rank applications");
+      console.error("Ranking error:", err);
+      setError(err.response?.data?.error || "Failed to rank applications");
+      toast.error(err.response?.data?.error || "Failed to rank applications");
     } finally {
       setIsRanking(false);
     }
@@ -252,8 +264,16 @@ const RecruiterApplications = () => {
               ) : (
                 <div className="row">
                   {rankedApplications 
-                    ? rankedApplications.map((app) => renderApplicationCard(app, true))
-                    : applications.map((app) => renderApplicationCard(app))}
+                    ? rankedApplications.map((app) => (
+                        <React.Fragment key={app.applicationId || app._id}>
+                          {renderApplicationCard(app, true)}
+                        </React.Fragment>
+                      ))
+                    : applications.map((app) => (
+                        <React.Fragment key={app._id}>
+                          {renderApplicationCard(app)}
+                        </React.Fragment>
+                      ))}
                 </div>
               )}
             </>

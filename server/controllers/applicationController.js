@@ -1,11 +1,8 @@
 const Application = require("../models/Application");
 const Job = require("../models/Job");
 const User = require("../models/User");
-const OpenAI = require("openai");
+const { rankResumes } = require('./resumeRanking');
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
 
 // Apply for a job
 exports.applyForJob = async (req, res) => {
@@ -61,7 +58,7 @@ exports.getApplicationsForJob = async (req, res) => {
     const applications = await Application.find({ job: jobId })
       .populate({
         path: 'applicant',
-        select: 'name email phone location skills experience education description resume'
+        select: 'name email phone location skills experience education description'
       });
     res.status(200).json(applications);
   } catch (error) {
@@ -167,7 +164,7 @@ const calculateMatchScore = (job, applicant) => {
   };
 };
 
-// Rank applications for a job using AI with fallback
+// Rank applications for a job
 exports.rankApplications = async (req, res) => {
   try {
     const { jobId } = req.params;
@@ -189,79 +186,34 @@ exports.rankApplications = async (req, res) => {
       return res.status(404).json({ error: "No applications found for this job" });
     }
 
-    // Process each application
-    const rankedApplications = await Promise.all(applications.map(async (application) => {
-      const applicant = application.applicant;
-      let aiResponse;
+    // Get rankings from the AI service
+    const rankings = await rankResumes(job, applications);
 
-      try {
-        // Prepare structured data for AI analysis
-        const jobContext = {
-          title: job.title,
-          company: job.company,
-          description: job.description,
-          requirements: job.requirements,
-          experienceRequired: job.experienceRequired,
-          education: job.educationRequired
-        };
-
-        const candidateContext = {
-          skills: applicant.skills,
-          experience: applicant.experience,
-          education: applicant.education,
-          resumeText: applicant.description
-        };
-
-        // Get AI analysis
-        const completion = await openai.chat.completions.create({
-          messages: [
-            {
-              role: "system",
-              content: "You are an expert HR AI assistant that evaluates job applications. Provide scores and explanations based on matching candidate qualifications with job requirements."
-            },
-            {
-              role: "user",
-              content: JSON.stringify({
-                task: "Evaluate candidate fit for job position",
-                jobDetails: jobContext,
-                candidateDetails: candidateContext,
-                outputFormat: {
-                  score: "number 0-100",
-                  explanation: "brief evaluation highlighting strengths and gaps"
-                }
-              })
-            }
-          ],
-          model: "gpt-3.5-turbo",
-          response_format: { type: "json_object" },
-          temperature: 0.3
-        });
-
-        aiResponse = JSON.parse(completion.choices[0].message.content);
-      } catch (error) {
-        console.log("AI ranking failed, using fallback scoring system");
-        // Use fallback ranking system
-        aiResponse = calculateMatchScore(job, applicant);
-      }
-
+    // Map the rankings to the applications
+    const rankedApplications = applications.map(application => {
+      const ranking = rankings.find(r => r.candidateId === application.applicant._id.toString()) || {
+        score: 0,
+        explanation: "No ranking available"
+      };
+      
       return {
         applicationId: application._id,
         applicant: {
-          id: applicant._id,
-          name: applicant.name,
-          email: applicant.email,
-          phone: applicant.phone,
-          location: applicant.location,
-          skills: applicant.skills,
-          experience: applicant.experience,
-          education: applicant.education
+          id: application.applicant._id,
+          name: application.applicant.name,
+          email: application.applicant.email,
+          phone: application.applicant.phone,
+          location: application.applicant.location,
+          skills: application.applicant.skills,
+          experience: application.applicant.experience,
+          education: application.applicant.education
         },
         status: application.status,
         appliedAt: application.appliedAt,
-        score: aiResponse.score,
-        analysis: aiResponse.explanation
+        score: ranking.score,
+        analysis: ranking.explanation
       };
-    }));
+    });
 
     // Sort by score in descending order
     rankedApplications.sort((a, b) => b.score - a.score);
