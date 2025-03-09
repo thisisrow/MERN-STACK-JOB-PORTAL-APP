@@ -1,8 +1,8 @@
 const axios = require('axios');
 
 // API details
-const API_KEY = "ddc-LuoBpT0yB7CdsZKlPJTVlPrB17cCBdG5ezAsOyxYviGfMCarq6";
-const BASE_URL = "https://api.sree.shop/v1";
+  const API_KEY = process.env.AI_API_KEY;
+  const BASE_URL = process.env.AI_BASE_URL;
 
 // Function to rank resumes based on job requirements
 async function rankResumes(jobDetails, applications) {
@@ -64,7 +64,7 @@ async function rankResumes(jobDetails, applications) {
 
     // Process and format the response
     const content = response.data.choices[0].message.content;
-    console.log("Resume Rankings Generated:", content);
+    // console.log("Resume Rankings Generated:", content);
     
     try {
       // Clean the content by removing markdown code block syntax
