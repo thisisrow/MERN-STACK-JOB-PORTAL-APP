@@ -5,14 +5,12 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { JobProvider } from './context/JobContext.jsx';
 import App from './App.jsx'
-import { Analytics } from '@vercel/analytics/next';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AuthProvider>
       <JobProvider>
       <App />
-      <Analytics />
       </JobProvider>
     </AuthProvider>
     
