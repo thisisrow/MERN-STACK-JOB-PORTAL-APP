@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import axios from "axios";
+import axios from "../config/axios";
 import { AuthContext } from "../context/AuthContext";
 import { Link } from "react-router-dom";
 import { FaBuilding, FaMapMarkerAlt, FaMoneyBillWave, FaBriefcase } from "react-icons/fa";
@@ -16,7 +16,7 @@ const Recommendation = () => {
     const fetchRecommendations = async () => {
       try {
         const res = await axios.get(
-          `https://mern-stack-job-portal-app.onrender.com/api/recommendations/${user._id}`,
+          `/api/recommendations/${user._id}`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         setRecommendedJobs(res.data.recommendedJobs);

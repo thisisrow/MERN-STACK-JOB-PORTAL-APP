@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
+import axios from "../config/axios";
 
 const Jobs = () => {
   const [jobs, setJobs] = useState([]);
@@ -24,7 +24,7 @@ const Jobs = () => {
     );
 
     axios
-      .get("https://mern-stack-job-portal-app.onrender.com/api/jobs", { params: filteredParams })
+      .get("/api/jobs", { params: filteredParams })
       .then((res) => {
         setJobs(res.data);
         setError(null);

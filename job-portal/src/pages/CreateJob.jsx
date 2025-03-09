@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
-import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import axios from "../config/axios";
 
 const CreateJob = () => {
   const { user, token } = useContext(AuthContext);
@@ -35,7 +35,7 @@ const CreateJob = () => {
     setLoading(true);
     try {
       await axios.post(
-        "https://mern-stack-job-portal-app.onrender.com/api/jobs",
+        "/api/jobs",
         {
           ...jobData,
           requirements: jobData.requirements.split(","),

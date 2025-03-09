@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import axios from "../config/axios";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaEnvelope, FaLock, FaUserTag } from "react-icons/fa";
 
@@ -62,7 +62,7 @@ const Register = () => {
       alert("Please enter a valid Gmail or Outlook email.");
       return;
     }
-    await axios.post("https://mern-stack-job-portal-app.onrender.com/api/auth/register", formData);
+    await axios.post("/api/auth/register", formData);
     navigate("/login");
   };
 

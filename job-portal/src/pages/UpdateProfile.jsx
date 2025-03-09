@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import axios from "axios";
+import axios from "../config/axios";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { FaUpload } from "react-icons/fa";
@@ -85,7 +85,7 @@ const UpdateProfile = () => {
 
     try {
       const response = await axios.post(
-        `https://mern-stack-job-portal-app.onrender.com/api/users/${user._id}/resume`,
+        `/api/users/${user._id}/resume`,
         formData,
         {
           headers: {
@@ -116,7 +116,7 @@ const UpdateProfile = () => {
 
     try {
       await axios.put(
-        `https://mern-stack-job-portal-app.onrender.com/api/users/${user._id}`,
+        `/api/users/${user._id}`,
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );

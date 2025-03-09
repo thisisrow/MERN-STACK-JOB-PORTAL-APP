@@ -1,53 +1,31 @@
 import { createContext, useState, useEffect } from "react";
-import axios from "axios";
+import axios from "../config/axios";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
-  const [error, setError] = useState(null); // Error state
-
-
-  // Load user & token from local storage on startup
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    const storedToken = localStorage.getItem("token");
-
-    if (storedUser && storedToken) {
-      setUser(storedUser);
-      setToken(storedToken);
-    }
-  }, []);
+  const [token, setToken] = useState(localStorage.getItem("token"));
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Fetch full user details
-  const fetchUserData = async (userId, receivedToken) => {
+  const fetchUserData = async (userId) => {
     try {
-      const { data } = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/users/${userId}`, {
-        headers: { Authorization: `Bearer ${receivedToken}` },
-      });
-
+      const { data } = await axios.get(`/api/users/${userId}`);
       setUser(data);
       localStorage.setItem("user", JSON.stringify(data));
     } catch (error) {
       console.error("Error fetching user data:", error);
       setError("Failed to fetch user data.");
+      logout();
     }
   };
 
   // Refresh user data (Used after applying/saving jobs)
   const refreshUserData = async () => {
-    if (!user?._id || !token) return;
-
-    try {
-      const { data } = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/users/${user._id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      setUser(data);
-      localStorage.setItem("user", JSON.stringify(data));
-    } catch (error) {
-      console.error("Error refreshing user data:", error);
+    if (user?._id && token) {
+      await fetchUserData(user._id);
     }
   };
 
@@ -55,21 +33,22 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       setError(null);
-      const { data } = await axios.post("https://mern-stack-job-portal-app.onrender.com/api/auth/login", { email, password });
+      const { data } = await axios.post("/api/auth/login", { email, password });
 
       if (data.token && data.userId) {
         setToken(data.token);
         localStorage.setItem("token", data.token);
-        await fetchUserData(data.userId, data.token);
-        return true; // Return success
+        await fetchUserData(data.userId);
+        return { success: true };
       } else {
         setError("Invalid response from server.");
-        return false;
+        return { success: false, error: "Invalid response from server" };
       }
     } catch (error) {
       console.error("Login failed:", error.response?.data || error.message);
-      setError(error.response?.data?.message || "Login failed. Please try again.");
-      return false;
+      const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
+      setError(errorMessage);
+      return { success: false, error: errorMessage };
     }
   };
 
@@ -81,9 +60,37 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("token");
   };
 
+  // Initialize auth state
+  useEffect(() => {
+    const initializeAuth = async () => {
+      if (token) {
+        try {
+          const decoded = JSON.parse(atob(token.split(".")[1]));
+          await fetchUserData(decoded.id);
+        } catch (error) {
+          console.error("Error initializing auth:", error);
+          logout();
+        }
+      }
+      setLoading(false);
+    };
+
+    initializeAuth();
+  }, [token]);
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, error, refreshUserData }}>
-      {children}
+    <AuthContext.Provider
+      value={{
+        user,
+        token,
+        loading,
+        login,
+        logout,
+        error,
+        refreshUserData,
+      }}
+    >
+      {!loading && children}
     </AuthContext.Provider>
   );
 };

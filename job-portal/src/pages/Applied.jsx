@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
-import axios from "axios";
 import { Spinner } from "react-bootstrap";
+import axios from "../config/axios";
 
 const Applied = () => {
   const { user } = useContext(AuthContext);
@@ -13,7 +13,7 @@ const Applied = () => {
 
     const fetchAppliedJobs = async () => {
       try {
-        const response = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/applications/user/${user._id}`);
+        const response = await axios.get(`/api/applications/user/${user._id}`);
         setAppliedJobs(response.data);
       } catch (error) {
         console.error("Error fetching applied jobs:", error);

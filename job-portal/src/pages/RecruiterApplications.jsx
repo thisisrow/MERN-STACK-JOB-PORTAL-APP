@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
+import axios from "../config/axios";
 import { AuthContext } from "../context/AuthContext";
 import { FaBriefcase, FaUser, FaEnvelope, FaPhone, FaGraduationCap, FaTools, FaCalendarAlt, FaRobot, FaStar, FaFilePdf, FaEye } from "react-icons/fa";
 import { Modal, Button } from "react-bootstrap";
@@ -21,7 +21,7 @@ const RecruiterApplications = () => {
 
     const fetchJobs = async () => {
       try {
-        const response = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/jobs/recruiter/${user._id}`);
+        const response = await axios.get(`/api/jobs/recruiter/${user._id}`);
         setJobs(response.data);
       } catch (err) {
         setError("Failed to load jobs");
@@ -33,7 +33,7 @@ const RecruiterApplications = () => {
 
   const fetchApplications = async (jobId) => {
     try {
-      const response = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/applications/job/${jobId}`);
+      const response = await axios.get(`/api/applications/job/${jobId}`);
       setApplications(response.data);
       setSelectedJob(jobId);
       setRankedApplications(null); // Reset ranked applications when switching jobs
@@ -41,7 +41,7 @@ const RecruiterApplications = () => {
       response.data.forEach(async (app) => {
         if (app.applicant?._id && !studentDetails[app.applicant._id]) {
           try {
-            const userResponse = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/users/${app.applicant._id}`);
+            const userResponse = await axios.get(`/api/users/${app.applicant._id}`);
             setStudentDetails((prevDetails) => ({
               ...prevDetails,
               [app.applicant._id]: userResponse.data,
@@ -61,7 +61,7 @@ const RecruiterApplications = () => {
 
     setIsRanking(true);
     try {
-      const response = await axios.get(`https://mern-stack-job-portal-app.onrender.com/api/applications/job/${selectedJob}/rank`);
+      const response = await axios.get(`/api/applications/job/${selectedJob}/rank`);
       setRankedApplications(response.data);
     } catch (err) {
       setError("Failed to rank applications");
@@ -72,7 +72,7 @@ const RecruiterApplications = () => {
 
   const updateStatus = async (applicationId, status) => {
     try {
-      await axios.put(`https://mern-stack-job-portal-app.onrender.com/api/applications/${applicationId}/status`, { status });
+      await axios.put(`/api/applications/${applicationId}/status`, { status });
       if (rankedApplications) {
         setRankedApplications(prev => prev.map(app => 
           app.applicationId === applicationId ? { ...app, status } : app
