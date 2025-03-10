@@ -8,16 +8,20 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [localError, setLocalError] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // New state for loading
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLocalError(null); // Clear previous errors
+    setIsLoading(true); // Start loading state
 
-    const success = await login(email, password);
+    const { success, error: loginError } = await login(email, password);
+
     if (success) {
       navigate("/dashboard"); // Redirect only if login is successful
     } else {
-      setLocalError("Invalid email or password. Please try again.");
+      setLocalError(loginError || "Invalid email or password. Please try again.");
+      setIsLoading(false); // Stop loading state
       setTimeout(() => setLocalError(null), 3000); // Auto-hide error
     }
   };
@@ -57,8 +61,8 @@ const Login = () => {
             />
           </div>
 
-          <button type="submit" className="w-100 btn btn-primary btn-lg">
-            Login
+          <button type="submit" className="w-100 btn btn-primary btn-lg" disabled={isLoading}>
+            {isLoading ? "Validating..." : "Login"} {/* Conditional text */}
           </button>
         </form>
       </div>
