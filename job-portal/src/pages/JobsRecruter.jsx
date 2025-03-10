@@ -7,6 +7,9 @@ const JobsRecruiter = () => {
   const { user } = useContext(AuthContext);
   const [jobs, setJobs] = useState([]);
   const [error, setError] = useState(null);
+  const [recommendedUsers, setRecommendedUsers] = useState([]);
+  const [selectedJobId, setSelectedJobId] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,6 +48,18 @@ const JobsRecruiter = () => {
     navigate(`/update-job/${jobId}`);
   };
 
+  const fetchRecommendedUsers = async (jobId) => {
+    try {
+      const response = await axios.get(`/api/recommendations/recruiter/${jobId}`);
+      setRecommendedUsers(response.data.suitableUsers);
+      setSelectedJobId(jobId);
+      setShowModal(true);
+    } catch (err) {
+      console.error("Error fetching recommended users:", err);
+    }
+  };
+
+
   return (
     <div className="container mt-5">
       <h2 className="mb-4 text-center">Your Posted Jobs</h2>
@@ -68,11 +83,51 @@ const JobsRecruiter = () => {
                   <button className="btn btn-outline-primary" onClick={() => handleEdit(job._id)}>Edit</button>
                   <button className="btn btn-outline-danger" onClick={() => handleDelete(job._id)}>Delete</button>
                 </div>
+                <button className="btn btn-success mt-2" onClick={() => fetchRecommendedUsers(job._id)}>
+                  Recommend Users
+                </button>
               </div>
             </div>
           ))}
         </div>
       )}
+
+{showModal && (
+  <div
+    className="modal fade show d-block"
+    style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+    onClick={() => setShowModal(false)}
+  >
+    <div className="modal-dialog">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h5 className="modal-title">Recommended Users for Job</h5>
+          <button className="btn-close" onClick={() => setShowModal(false)}></button>
+        </div>
+        <div className="modal-body">
+          {recommendedUsers.length === 0 ? (
+            <p>No users found for this job.</p>
+          ) : (
+            <ul className="list-group">
+              {recommendedUsers.map(user => (
+                <li key={user._id} className="list-group-item">
+                  <strong>{user.name}</strong>  
+                  <br />
+                  <strong>Skills:</strong> {user.skills.length > 0 ? user.skills.join(", ") : "No skills listed"}
+                  <br />
+                  <strong>Email:</strong> {user.email}
+                  <br />
+                  <strong>Contact:</strong> {user.phone || "N/A"}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
