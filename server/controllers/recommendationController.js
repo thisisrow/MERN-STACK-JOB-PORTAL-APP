@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Job = require("../models/Job");
 const User = require("../models/User");
 
@@ -33,29 +34,32 @@ exports.getRecommendations = async (req, res) => {
 exports.getUsersForJob = async (req, res) => {
   try {
     const jobId = req.params.jobId;
-    const job = await Job.findById(jobId);
 
+    // Validate Job ID format
+    if (!mongoose.Types.ObjectId.isValid(jobId)) {
+      return res.status(400).json({ error: "Invalid Job ID format" });
+    }
+
+    const job = await Job.findById(jobId);
     if (!job) {
       return res.status(404).json({ message: "Job not found" });
     }
 
-    // Construct the query to find users that match the job requirements
+    // Construct query to find suitable users
     const query = {
-      $and: [
-        { skills: { $in: job.requirements } }, // Check if user's skills match job requirements
-        { experience: { $gte: job.experienceRequired } }, // Check if user's experience is >= job's experience requirement
-        job.educationRequired?.degree
-          ? { "education.degree": job.educationRequired.degree } // Match degree if required
-          : {},
-      ],
+      skills: { $in: job.requirements || [] },
+      experience: { $gte: job.experienceRequired || 0 },
+      ...(job.educationRequired?.degree
+        ? { "education.degree": job.educationRequired.degree }
+        : {}),
     };
 
-    // Find users who match the job's requirements
-    const suitableUsers = await User.find(query).select("name email skills experience education"); // Limit fields for performance
+    const suitableUsers = await User.find(query).select(
+      "name email phone skills experience education"
+    );
 
     res.status(200).json({ job: jobId, suitableUsers });
   } catch (error) {
-    console.error("Error fetching users for the job:", error);
     res.status(500).json({ error: "Server error" });
   }
 };
