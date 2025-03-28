@@ -137,7 +137,7 @@ const Register = () => {
               <FaUserTag className="me-2" /> Role
             </label>
             <select className="form-select" name="role" onChange={handleChange}>
-              <option value="student">Student</option>
+              <option value="student">Job seekers</option>
               <option value="recruiter">Recruiter</option>
             </select>
           </div>
