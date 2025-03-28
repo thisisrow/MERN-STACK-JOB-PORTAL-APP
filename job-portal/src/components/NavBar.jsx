@@ -9,7 +9,7 @@ const Navbar = () => {
     <nav className="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
       <div className="container">
         {/* Brand */}
-        <Link className="navbar-brand fw-bold" to="/">Job Portal</Link>
+        <Link className="navbar-brand fw-bold" to="/">RojgarSarthi</Link>
 
         {/* Toggle Button for Mobile View */}
         <button 
