@@ -1,81 +1,79 @@
 The current project is a MERN Stack Job Portal Application with the following features:
 
 General Features
-User Authentication:
+1 User Authentication:
+  -Users can register and log in.
+  -Role-based access for "students" and "recruiters."
+2 Responsive Design:
+  -The application is designed to work seamlessly across devices.
+3 Role-Based Dashboards:
+  -Separate dashboards for students and recruiters.
 
-Users can register and log in.
-Role-based access for "students" and "recruiters."
-Responsive Design:
-
-The application is designed to work seamlessly across devices.
-Role-Based Dashboards:
-
-Separate dashboards for students and recruiters.
 Student Features
-Profile Management:
+1 Profile Management:
+ -Students can update their profile, including skills, education, and resume upload.
 
-Students can update their profile, including skills, education, and resume upload.
-Job Search:
+2 Job Search:
+  -Students can search for jobs using filters like title, company, location, skills, experience, and education.
 
-Students can search for jobs using filters like title, company, location, skills, experience, and education.
-Job Application:
+3 Job Application:
+  -Students can apply for jobs with a cover letter.
+  -View the status of their applications.
 
-Students can apply for jobs with a cover letter.
-View the status of their applications.
-Saved Jobs:
+4 Saved Jobs:
+  Students can save jobs for later reference.
 
-Students can save jobs for later reference.
-Job Recommendations:
+5 Job Recommendations:
+  -AI-powered job recommendations based on their profile (skills, experience, and education).
 
-AI-powered job recommendations based on their profile (skills, experience, and education).
 Recruiter Features
-Profile Management:
+1 Profile Management:
+  -Recruiters can update their profile.
 
-Recruiters can update their profile.
-Job Posting:
+2 Job Posting:
+  -Recruiters can create, edit, and delete job postings.
 
-Recruiters can create, edit, and delete job postings.
-View Applications:
+3 View Applications:
+  -Recruiters can view applications for their posted jobs.
 
-Recruiters can view applications for their posted jobs.
-Application Ranking:
+4 Application Ranking:
+  -AI-powered ranking of job applications based on job requirements and candidate profiles.
 
-AI-powered ranking of job applications based on job requirements and candidate profiles.
-Application Status Management:
+5 Application Status Management:
+  -Recruiters can update the status of applications (e.g., pending, reviewed, interview, hired, rejected).
 
-Recruiters can update the status of applications (e.g., pending, reviewed, interview, hired, rejected).
-Admin Features (Optional)
-Not explicitly implemented but can be extended to include admin features like managing users, jobs, and applications.
+6 Admin Features 
+- Not explicitly implemented but can be extended to include admin features like managing users, jobs, and applications.
+
 Backend Features
-RESTful API:
+1 RESTful API:
+-Built with Express.js and MongoDB for handling user, job, and application data.
 
-Built with Express.js and MongoDB for handling user, job, and application data.
-AI Integration:
+2 AI Integration:
+-Uses OpenAI API for ranking resumes and providing job recommendations.
 
-Uses OpenAI API for ranking resumes and providing job recommendations.
-Cloudinary Integration:
+3 Cloudinary Integration:
+-For storing resumes uploaded by students.
 
-For storing resumes uploaded by students.
-Secure Authentication:
+4 Secure Authentication:
+-JWT-based authentication for secure API access.
+-Error Handling:
 
-JWT-based authentication for secure API access.
-Error Handling:
+5 Comprehensive error handling for API endpoints.
 
-Comprehensive error handling for API endpoints.
 Frontend Features
-React-Based UI:
-
-Built with React and Vite for fast and efficient rendering.
-State Management:
-
-Context API for managing authentication and job data.
-Real-Time Feedback:
-
-Password strength checker, progress bars for uploads, and toast notifications for actions.
+1 React-Based UI:
+-Built with React and Vite for fast and efficient rendering.
+2 State Management:
+-Context API for managing authentication and job data.
+3 Real-Time Feedback:
+-Password strength checker, progress bars for uploads, and toast notifications for actions.
 Third-Party Libraries:
 
 Bootstrap for styling.
+
 React Icons for UI enhancements.
 React Toastify for notifications.
+
 Deployment
 Frontend and backend are configured for deployment on platforms like Vercel and Render.
